@@ -9,9 +9,10 @@ describe("AdventurersCard", function () {
   let adventurersCard: AdventurersCard;
   let owner: SignerWithAddress;
   let addr1: SignerWithAddress;
+  let addr2: SignerWithAddress;
 
   beforeEach(async function () {
-    [owner, addr1] = await ethers.getSigners();
+    [owner, addr1, addr2] = await ethers.getSigners();
     AdventurersCard = await ethers.getContractFactory("AdventurersCard");
     adventurersCard = (await AdventurersCard.deploy()) as AdventurersCard;
   });
@@ -63,6 +64,57 @@ describe("AdventurersCard", function () {
       await expect(
         adventurersCard.connect(addr1)["safeTransferFrom(address,address,uint256)"](addr1.address, owner.address, 0)
       ).to.be.revertedWith("Transfers not allowed");
+    });
+  });
+
+  describe("Stat modifications", function () {
+
+    it("Should prevent non-whitelisted address from modifying stats", async function () {
+      await adventurersCard.safeMint(addr1.address);
+      
+      const newStats = {
+        attack: 5,
+        defense: 3,
+        hp: 10,
+        speed: 4,
+        critChance: 2,
+        evadeChance: 1,
+        blockChance: 1,
+        counterChance: 1
+      };
+      
+      await expect(
+        adventurersCard.connect(addr2).modifyStats(0, newStats)
+      ).to.be.revertedWith("Not authorized to modify stats");
+    });
+
+    it("Should add new stats to existing stats", async function () {
+      // Mint a token
+      await adventurersCard.safeMint(addr1.address);
+      await adventurersCard.setWhitelistStatus(addr2.address, true);
+      
+      // Get initial stats
+      const initialStats = await adventurersCard.getCharacterStats(0);
+      
+      // Add stats
+      const statChanges = {
+        attack: 2,
+        defense: 3,
+        hp: 4,
+        speed: 1,
+        critChance: 1,
+        evadeChance: 1,
+        blockChance: 1,
+        counterChance: 1
+      };
+      
+      await adventurersCard.connect(addr2).modifyStats(0, statChanges);
+
+      const updatedStats = await adventurersCard.getCharacterStats(0);
+      expect(updatedStats.attack).to.equal(initialStats.attack + BigInt(statChanges.attack));
+      expect(updatedStats.defense).to.equal(initialStats.defense + BigInt(statChanges.defense));
+      expect(updatedStats.hp).to.equal(initialStats.hp + BigInt(statChanges.hp));
+      // ... etc
     });
   });
 });

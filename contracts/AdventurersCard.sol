@@ -25,6 +25,9 @@ contract AdventurersCard is ERC721, ERC721URIStorage, Ownable {
     uint256 private _nextTokenId;
     string private _baseURIextended;
     mapping(address => bool) public hasMinted;
+    mapping(address => bool) public isWhitelisted;
+
+    event StatsUpdated(uint256 indexed tokenId, CharacterStats newStats);
 
     constructor() ERC721("Adventurers Card", "ADVCARD") Ownable(msg.sender) {}
 
@@ -90,5 +93,33 @@ contract AdventurersCard is ERC721, ERC721URIStorage, Ownable {
 
     function setApprovalForAll(address, bool) public virtual override(ERC721, IERC721) {
         revert("Approvals not allowed");
+    }
+
+    function setWhitelistStatus(address operator, bool status) external onlyOwner {
+        isWhitelisted[operator] = status;
+    }
+
+    function modifyStats(uint256 tokenId, CharacterStats calldata statChanges) external {
+        require(isWhitelisted[msg.sender], "Not authorized to modify stats");
+        require(_ownerOf(tokenId) != address(0), "Character does not exist");
+        
+        CharacterStats storage currentStats = characterStats[tokenId];
+        CharacterStats memory newStats = CharacterStats(
+            uint8(max(1, int8(currentStats.attack) + int8(statChanges.attack))),
+            uint8(max(1, int8(currentStats.defense) + int8(statChanges.defense))),
+            uint8(max(1, int8(currentStats.hp) + int8(statChanges.hp))),
+            uint8(max(1, int8(currentStats.speed) + int8(statChanges.speed))),
+            uint8(max(0, int8(currentStats.critChance) + int8(statChanges.critChance))),
+            uint8(max(0, int8(currentStats.evadeChance) + int8(statChanges.evadeChance))),
+            uint8(max(0, int8(currentStats.blockChance) + int8(statChanges.blockChance))),
+            uint8(max(0, int8(currentStats.counterChance) + int8(statChanges.counterChance)))
+        );
+        
+        characterStats[tokenId] = newStats;
+        emit StatsUpdated(tokenId, newStats);
+    }
+
+    function max(int8 a, int8 b) internal pure returns (int8) {
+        return a >= b ? a : b;
     }
 }
