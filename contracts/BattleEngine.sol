@@ -29,7 +29,19 @@ contract BattleEngine {
         adventurersCard = AdventurersCard(_adventurersCardAddress);
     }
 
-    function battle(uint256 tokenId1, uint256 tokenId2) external {
+    struct BattleResult {
+        address winner;
+        address loser;
+        uint256 turns;
+        uint256 winnerRemainingHp;
+        uint256 loserRemainingHp;
+    }
+
+    function battle(
+        uint256 tokenId1, 
+        uint256 tokenId2, 
+        uint256 maxTurns
+    ) external returns (BattleResult memory) {
         // Load character stats
         AdventurersCard.CharacterStats memory stats1 = adventurersCard.getCharacterStats(tokenId1);
         AdventurersCard.CharacterStats memory stats2 = adventurersCard.getCharacterStats(tokenId2);
@@ -44,8 +56,8 @@ contract BattleEngine {
 
         
 
-        // Battle until one player's HP reaches 0 or MAX_TURNS is reached
-        while (currentHp1 > 0 && currentHp2 > 0 && turns < MAX_TURNS) {
+        // Battle until one player's HP reaches 0 or maxTurns is reached
+        while (currentHp1 > 0 && currentHp2 > 0 && turns < maxTurns) {
             turns++;
             
             if (firstPlayerTurn) {
@@ -57,34 +69,43 @@ contract BattleEngine {
             firstPlayerTurn = !firstPlayerTurn;
         }
 
-        // Determine winner - if MAX_TURNS reached, player with more HP wins
-        address winner;
-        address loser;
-        uint256 remainingHp;
+        BattleResult memory result;
+        result.turns = turns;
 
-        if (turns >= MAX_TURNS) {
+        if (turns >= maxTurns) {
             if (currentHp1 > currentHp2) {
-                winner = adventurersCard.ownerOf(tokenId1);
-                loser = adventurersCard.ownerOf(tokenId2);
-                remainingHp = currentHp1;
+                result.winner = adventurersCard.ownerOf(tokenId1);
+                result.loser = adventurersCard.ownerOf(tokenId2);
+                result.winnerRemainingHp = currentHp1;
+                result.loserRemainingHp = currentHp2;
             } else {
-                winner = adventurersCard.ownerOf(tokenId2);
-                loser = adventurersCard.ownerOf(tokenId1);
-                remainingHp = currentHp2;
+                result.winner = adventurersCard.ownerOf(tokenId2);
+                result.loser = adventurersCard.ownerOf(tokenId1);
+                result.winnerRemainingHp = currentHp2;
+                result.loserRemainingHp = currentHp1;
             }
         } else {
             if (currentHp1 > 0) {
-                winner = adventurersCard.ownerOf(tokenId1);
-                loser = adventurersCard.ownerOf(tokenId2);
-                remainingHp = currentHp1;
+                result.winner = adventurersCard.ownerOf(tokenId1);
+                result.loser = adventurersCard.ownerOf(tokenId2);
+                result.winnerRemainingHp = currentHp1;
+                result.loserRemainingHp = currentHp2;
             } else {
-                winner = adventurersCard.ownerOf(tokenId2);
-                loser = adventurersCard.ownerOf(tokenId1);
-                remainingHp = currentHp2;
+                result.winner = adventurersCard.ownerOf(tokenId2);
+                result.loser = adventurersCard.ownerOf(tokenId1);
+                result.winnerRemainingHp = currentHp2;
+                result.loserRemainingHp = currentHp1;
             }
         }
         
-        emit BattleCompleted(winner, loser, turns, remainingHp);
+        emit BattleCompleted(
+            result.winner, 
+            result.loser, 
+            result.turns, 
+            result.winnerRemainingHp
+        );
+
+        return result;
     }
 
     function executeTurn(

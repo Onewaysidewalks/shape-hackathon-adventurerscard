@@ -26,7 +26,7 @@ describe("BattleEngine", function () {
 
     describe("Battle", function () {
         it("Should execute a battle between two cards", async function () {
-            const tx = await battleEngine.battle(0, 1);
+            const tx = await battleEngine.battle(0, 1, 20);
             const receipt = await tx.wait();
             
             // Get the BattleCompleted event from the receipt
@@ -58,17 +58,17 @@ describe("BattleEngine", function () {
         });
 
         it("Should emit TurnCompleted events", async function () {
-            await expect(battleEngine.battle(0, 1))
+            await expect(battleEngine.battle(0, 1, 20))
                 .to.emit(battleEngine, "TurnCompleted");
         });
 
         it("Should emit BattleCompleted event", async function () {
-            await expect(battleEngine.battle(0, 1))
+            await expect(battleEngine.battle(0, 1, 20))
                 .to.emit(battleEngine, "BattleCompleted");
         });
 
         it("Should complete battle within gas limits", async function () {
-            const tx = await battleEngine.battle(0, 1);
+            const tx = await battleEngine.battle(0, 1, 20);
             const receipt = await tx.wait();
             
             console.log("Gas used:", receipt.gasUsed.toString());
