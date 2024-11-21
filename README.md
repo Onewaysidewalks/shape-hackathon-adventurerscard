@@ -1,30 +1,26 @@
 # Shape Hackathon
 
 ## Setup
+This repo is a monorepo with a NextJS frontend and a Hardhat contracts packages, however they are not connected to each other and must be run separately.
 
-```
-npm install
-```
+```bash 
+# change to the packages/contracts directory
+cd packages/contracts
 
-## Testing
+# Install dependencies
+yarn
 
-```
-npx hardhat test
-```
-
-## Deploying
-
-```
-npx hardhat deploy
+# Run the tests
+yarn hardhat test
 ```
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a Hardhat Ignition module that deploys that contract.
+```bash 
+# change to the packages/frontend directory
+cd packages/frontend
 
-Try running some of the following tasks:
+# Install dependencies
+yarn
 
-```shell
-npx hardhat help
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat ignition deploy ./ignition/modules/Lock.ts
+# Run the frontend
+yarn dev
 ```
