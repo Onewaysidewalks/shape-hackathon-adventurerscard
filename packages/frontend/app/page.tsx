@@ -5,12 +5,20 @@ import {
   useSignerStatus,
   useUser,
 } from "@account-kit/react";
+import { useRouter } from "next/navigation";
+
 
 export default function Home() {
   const user = useUser();
   const { openAuthModal } = useAuthModal();
   const signerStatus = useSignerStatus();
   const { logout } = useLogout();
+  const router = useRouter();
+
+  // Add effect to redirect when user is logged in
+  if (user && !signerStatus.isInitializing) {
+    router.push('/game');
+  }
 
   return (
     <main className="flex min-h-screen flex-col items-center p-24 gap-4 justify-center text-center">
