@@ -1,10 +1,10 @@
 "use client";
 import { useEffect, useState } from 'react';
 import Phaser from 'phaser';
-import { AlchemyWeb3Signer } from '@alchemy/aa-core';
-import { UseUserResult } from '@account-kit/react';
+import type { AlchemyWebSigner } from "@account-kit/signer";
+import type { UseUserResult } from '@account-kit/react';
 
-export default function Game({ user, signer }: { user: UseUserResult, signer: AlchemyWeb3Signer }) {
+export default function Game({ user, signer }: { user: UseUserResult, signer: AlchemyWebSigner }) {
   const [game, setGame] = useState<Phaser.Game | null>(null);
 
   useEffect(() => {
