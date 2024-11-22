@@ -45,7 +45,7 @@ export default function GamePage() {
       }
 
       update() {
-        const cursors = this.input.keyboard.createCursorKeys();
+        const cursors = this.input.keyboard!.createCursorKeys();
         const speed = 5;
 
         if (cursors.left.isDown) {
