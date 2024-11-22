@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useLogout, useUser, useSigner } from "@account-kit/react";
 import { useRouter } from "next/navigation";
 import dynamic from 'next/dynamic';
