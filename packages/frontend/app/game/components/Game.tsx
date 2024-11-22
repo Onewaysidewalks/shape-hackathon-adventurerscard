@@ -4,7 +4,7 @@ import Phaser from 'phaser';
 import type { AlchemyWebSigner } from "@account-kit/signer";
 import type { UseUserResult } from '@account-kit/react';
 
-export default function Game({ user, signer }: { user: UseUserResult, signer: AlchemyWebSigner }) {
+export default function Game({ user, signer }: { user: UseUserResult, signer: AlchemyWebSigner | null }) {
   const [game, setGame] = useState<Phaser.Game | null>(null);
 
   useEffect(() => {
