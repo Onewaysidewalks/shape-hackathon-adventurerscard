@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useLogout, useUser, useSigner } from "@account-kit/react";
 import { useRouter } from "next/navigation";
+import {Suspense} from "react";
 import Phaser from 'phaser';
 
 export default function GamePage() {
@@ -106,7 +107,9 @@ export default function GamePage() {
           Logout
         </button>
       </div>
-      <div id="game-container" className="w-full h-[calc(100vh-4rem)]" />
+      <Suspense fallback={<>Loading...</>}>
+        <div id="game-container" className="w-full h-[calc(100vh-4rem)]" />
+      </Suspense>
     </div>
   );
 }
