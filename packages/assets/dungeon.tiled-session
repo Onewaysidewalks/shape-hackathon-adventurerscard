@@ -1,0 +1,21 @@
+{
+    "fileStates": {
+        "": {
+            "scaleInEditor": 2
+        },
+        "tilesets/dungeon.tmx": {
+            "scale": 3,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 158.5,
+                "y": 140.33333333333334
+            }
+        },
+        "tilesets/dungeon.tmx#Dungeon_Tileset_at": {
+            "scaleInDock": 1.5
+        }
+    },
+    "recentFiles": [
+        "tilesets/dungeon.tmx"
+    ]
+}

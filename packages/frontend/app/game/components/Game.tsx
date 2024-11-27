@@ -9,28 +9,58 @@ export default function Game({ user, signer }: { user: UseUserResult, signer: Al
 
   useEffect(() => {
     class MainScene extends Phaser.Scene {
-      private player!: Phaser.GameObjects.Rectangle;
+      private player!: Phaser.GameObjects.Sprite;
       private worldSize = { width: 2000, height: 2000 };
 
       constructor() {
         super({ key: 'MainScene' });
       }
 
+      preload() {
+        this.load.image('dungeon', '/Dungeon_Tileset_at.png');
+        this.load.tilemapTiledJSON('dungeon', '/dungeon.json');
+        this.load.spritesheet('player', 'images/Swordman.png', { frameWidth: 48, frameHeight: 48  });
+
+      }
+
       create() {
         this.cameras.main.setBounds(0, 0, this.worldSize.width, this.worldSize.height);
-
-        const tileSize = 32;
-        for (let y = 0; y < this.worldSize.height; y += tileSize) {
-          for (let x = 0; x < this.worldSize.width; x += tileSize) {
-            const green = Phaser.Math.Between(0x557744, 0x88AA77);
-            this.add.rectangle(x + tileSize/2, y + tileSize/2, tileSize, tileSize, green);
-          }
-        }
-
+        
         const centerX = this.worldSize.width / 2;
         const centerY = this.worldSize.height / 2;
-        this.player = this.add.rectangle(centerX, centerY, 32, 32, 0xff0000);
-        this.player.setStrokeStyle(2, 0xffffff);
+
+        const map = this.make.tilemap({ key: 'dungeon' });
+        const tileset = map.addTilesetImage('Dungeon_Tileset_at', 'dungeon', 16, 16);
+        const walls = map.createLayer('Walls', tileset!);
+        const ground = map.createLayer('Ground', tileset!,);
+
+        walls!.setCollisionByProperty({ collides: true });
+        
+        // const debugGraphics = this.add.graphics().setAlpha(0.75);
+        // walls!.renderDebug(debugGraphics, { 
+        //     tileColor: null, 
+        //     collidingTileColor: new Phaser.Display.Color(243, 234, 48, 255), 
+        //     faceColor: new Phaser.Display.Color(40, 94, 155, 255) 
+        // });
+
+
+        const idle = {
+            key: 'idle',
+            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 5 }),
+            frameRate: 10,
+            repeat: -1,
+            duration: 1000
+        };
+
+        this.anims.create(idle);
+
+        this.player = this.add.sprite(0, 0, 'player');
+        console.log(this.player);
+        console.log(this.anims);
+        this.player.anims.play(idle, true);
+
+        // this.player = this.add.rectangle(0, 0, 16, 16, 0xff0000);
+        // this.player.setStrokeStyle(2, 0xffffff);
 
         this.cameras.main.startFollow(this.player);
       }
