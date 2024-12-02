@@ -1,4 +1,9 @@
 {
+    "activeFile": "",
+    "expandedProjectPaths": [
+        "tilesets",
+        "."
+    ],
     "fileStates": {
         "": {
             "scaleInEditor": 2
@@ -15,6 +20,9 @@
             "scaleInDock": 1.5
         }
     },
+    "openFiles": [
+    ],
+    "project": "dungeon.tiled-project",
     "recentFiles": [
         "tilesets/dungeon.tmx"
     ]
